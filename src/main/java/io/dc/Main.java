@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 @CommandLine.Command(name = "Aes 加解密工具", mixinStandardHelpOptions = true, version = "1.0", description = "")
 public class Main  implements  Runnable{
-    @CommandLine.Option(names = {"-p", "--password"}, description = "密码，小于等于16位", required = true)
+    @CommandLine.Option(names = {"-p", "--password"}, description = "密码，小于等于16位", required = true,interactive = true, arity = "0..1", hidden = true)
     private String password;
 
     @CommandLine.Option(names = {"-en"} , description = "加密", required = false)
@@ -57,7 +57,7 @@ public class Main  implements  Runnable{
                     AesUtil.aesDe(password, file);
                 }
             } catch (Exception e) {
-                System.out.println((file + " 加解密失败: " + e.getMessage()));
+                System.out.println((file + " 加解密失败,密码错误，或者密文已经损坏:\n " + e.getMessage()));
                 throw new RuntimeException(e);
             }
         }
