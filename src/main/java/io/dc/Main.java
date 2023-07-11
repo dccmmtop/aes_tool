@@ -70,7 +70,6 @@ public class Main  implements  Runnable{
                  matcher = pattern.matcher(file.getName());
                 if (matcher.matches()) {
                     allFileList.add(file.getAbsolutePath());
-                    System.out.println(file.getAbsolutePath());
                 }
             } else if (file.isDirectory()) {
                 recursiveListFiles(file, pattern);

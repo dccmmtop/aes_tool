@@ -36,10 +36,7 @@ public class AesUtil {
 
     public static void aesEn(String key, String filename) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         String plaintext = readFile(filename);
-        System.out.println(plaintext);
         key = String.format("%-16s", key);
-        System.out.println(key);
-        System.out.println(key.length());
         byte[] iv = IV.getBytes(CHARSET);
 
         // Generate a new AES key
