@@ -24,7 +24,7 @@ public class AesUtil {
 
 
 
-    public static void writeFile(String filename, String text) throws IOException {
+    public static void writeFile(String filename, String text) {
         // 使用 FileWriter 写入文件
         try (Writer writer = new OutputStreamWriter(Files.newOutputStream(Paths.get(filename)), CHARSET)) {
             writer.write(text);
@@ -33,9 +33,16 @@ public class AesUtil {
         }
     }
 
+    public static void writeFile(String filename, byte[] text)  {
+        try (FileOutputStream  streamOut  = new FileOutputStream (filename)) {
+            streamOut.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void aesEn(String key, String filename) throws IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        String plaintext = readFile(filename);
         key = String.format("%-16s", key);
         byte[] iv = IV.getBytes(CHARSET);
 
@@ -48,10 +55,10 @@ public class AesUtil {
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv));
 
         // Encrypt the plaintext
-        byte[] ciphertext = cipher.doFinal(plaintext.getBytes(CHARSET));
+        byte[] ciphertext = cipher.doFinal(readByteFile(filename));
 
         // Return the Base64-encoded ciphertext
-        plaintext = Base64.getEncoder().encodeToString(ciphertext);
+        String plaintext = Base64.getEncoder().encodeToString(ciphertext);
         writeFile(filename + EN_FILE_FLAG, plaintext);
     }
 
@@ -75,8 +82,7 @@ public class AesUtil {
         // Decrypt the ciphertext
         byte[] ciphertext = Base64.getDecoder().decode(encrypted);
         byte[] plaintext = cipher.doFinal(ciphertext);
-
-        writeFile(filename.replace(EN_FILE_FLAG,""), new String(plaintext, CHARSET));
+        writeFile(filename.replace(EN_FILE_FLAG,""), plaintext);
     }
 
     public static String readFile(String filename) throws IOException {
@@ -90,6 +96,17 @@ public class AesUtil {
         bufferedReader.close();
 
         return content.toString().trim();
+    }
+    public static byte[] readByteFile(String filename) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(Files.newInputStream(new File(filename).toPath()));
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+        byte[] temp = new byte[1024];
+        int size = 0;
+        while((size = in.read(temp)) != -1){
+            out.write(temp, 0, size);
+        }
+        in.close();
+        return out.toByteArray();
     }
 
     public static void main(String[] args) throws Exception {
